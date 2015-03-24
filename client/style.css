@@ -1,0 +1,27 @@
+@import url(http://fonts.googleapis.com/css?family=Arvo:400,700);
+
+*{
+    font-family: Arvo;
+    font-size: 22px;
+}
+
+.panel{
+    cursor:pointer;
+}
+
+.thumbnails{
+    width:100%;
+    height:200px;
+}
+
+button{
+    font-size: 22px !important;
+}
+
+.panel h6{
+    font-size: 16px;
+}
+
+.brand{
+    text-align:center;
+}
