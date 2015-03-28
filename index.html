@@ -2,8 +2,8 @@
     <meta charset="utf-8"/>
     <title>WatchApp</title>
     <meta name="viewport" content="width=device-width initial-scale=1.0 maximum-scale=1.0 user-scalable=yes"/>
-    <link href="http://www.berriart.com/sidr/javascripts/sidr/stylesheets/jquery.sidr.dark.css"
-          rel="Stylesheet"/>
+    <!-- <link href="http://www.berriart.com/sidr/javascripts/sidr/stylesheets/jquery.sidr.dark.css"
+           rel="Stylesheet"/>-->
 
     <!-- sidr js -->
     <script src="http://www.berriart.com/sidr/javascripts/sidr/jquery.sidr.min.js"></script>
@@ -11,209 +11,205 @@
 
 
 <template name="layout">
+{{#if currentUser}}
+      {{> navbar}}
+{{/if}}
+    {{> yield}}
+</template>
 
-    <nav class="navbar navbar-inverse">
+<template name="navbar">
+    <nav class="navbar navbar-default">
         <div class="container-fluid">
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">Brand</a>
+                <a id="btnRespNav" class="navbar-brand menu-navbar" href="#"><i class="fa fa-bars"></i>&nbsp;&nbsp;<strong>WatchApp.</strong></a>
             </div>
-
-            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
-                <ul class="nav navbar-nav">
-                    <li class="active"><a href="#">Link <span class="sr-only">(current)</span></a></li>
-                    <li><a href="#">Link</a></li>
-                    <li class="dropdown open">
-                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="true">Dropdown <span class="caret"></span></a>
-                        <ul class="dropdown-menu" role="menu">
-                            <li><a href="#">Action</a></li>
-                            <li><a href="#">Another action</a></li>
-                            <li><a href="#">Something else here</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#">Separated link</a></li>
-                            <li class="divider"></li>
-                            <li><a href="#">One more separated link</a></li>
+            <div class="nav-collapse collapse">
+                <ul class="nav">
+                    <li><a href="#">Video Sources</a>
+                        <ul>
+                            <li><a href="/videos"><i class="fa fa-youtube"></i>&nbsp;&nbsp;Youtube</a></li>
+                            <li><a href="/vimeo"><i class="fa fa-vimeo-square"></i>&nbsp;&nbsp;Vimeo</a></li>
                         </ul>
                     </li>
-                </ul>
-                <form class="navbar-form navbar-left" role="search">
-                    <div class="form-group">
-                        <input type="text" class="form-control" placeholder="Search">
-                    </div>
-                    <button type="submit" class="btn btn-default">Submit</button>
-                </form>
-                <ul class="nav navbar-nav navbar-right">
-                    <li><a href="#">Link</a></li>
+
+                    <li><a href="#">All Channels</a>
+                        <ul>
+                            <li><a href="#" id="movies"><i class="fa fa-film"></i>&nbsp;&nbsp;Movies</a></li>
+                            <li><a href="#" id="tv"><i class="fa fa-caret-square-o-right"></i>&nbsp;&nbsp;TV Shows</a>
+                            </li>
+                            <li><a href="#" id="music"><i class="fa fa-music"></i>&nbsp;&nbsp;Music</a></li>
+                            <li><a href="#" id="sports"><i class="fa fa-soccer-ball-o"></i>&nbsp;&nbsp;Sports</a></li>
+                            <li><a href="#" id="news"><i class="fa fa-globe"></i>&nbsp;&nbsp;News/Media</a></li>
+                            <li><a href="#" id="books"><i class="fa fa-book"></i>&nbsp;&nbsp;Books</a></li>
+                        </ul>
+                    </li>
+
+                    <li><a href="/settings"><i class="fa fa-cog"></i>&nbsp;&nbsp;Settings</a></li>
+                    <li><a href="/logout"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;Logout</a></li>
+
+
                 </ul>
             </div>
+
         </div>
     </nav>
-    <!--<div class="navbar navbar-default navbar-fixed-top">
-        <div class="navbar-inner">
-            <div class="container">
-                <div id="btnRespNav" class="menu-navbar" style="float: left;padding-top: 5px;">
-                    <i class="fa fa-bars"></i>
-                </div>
-
-                <div class="nav-collapse collapse">
-                    <ul class="nav">
-                        <li class="active"><a href="/">Video Sources</a></li>
-                        <li><a href="/videos">Youtube</a></li>
-                        <li><a href="/videos">Facebook</a></li>
-                        <li><a href="/videos">Metacafe</a></li>
-                        <li><a href="/videos">Vimeo</a></li>
-                        <li><a href="#" id="logout">Logout</a></li>
-                    </ul>
-                </div>
-                &lt;!&ndash;/.nav-collapse &ndash;&gt;
-            </div>
-        </div>
-    </div>-->
-    <div class="col-md-10 col-md-offset-1">
-        {{> yield}}
-    </div>
 </template>
+
 
 <template name="launch">
     <div class="col-xs-10 col-xs-offset-1 animated pulse">
         <br>
 
-        <p>
-        <center><strong>WatchApp</strong></center>
+
+        <p style="text-align: center;font-size: 18px;padding-top: 100px;">
+            <img src="/icon-96x96.png" width="150px" height="150px"><br>
+            Be ready to be surprised !
         </p>
-        <p>
-        <center>Be ready to be surprised !!</center>
-        </p><br>
-        <button id="fb" class="btn btn-block btn-primary"><i class="fa fa-facebook"></i>&nbsp;&nbsp;Facebook</button>
         <br>
+
+        <button id="fb" class="btn btn-block btn-primary"><i class="fa fa-facebook"></i>&nbsp;&nbsp;Facebook</button>
+        <hr>
         <button id="tw" class="btn btn-block btn-danger"><i class="fa fa-twitter"></i>&nbsp;&nbsp;Twitter</button>
     </div>
 </template>
 
-<template name="videos ">
-    <div class="animated bounceInUp "  style="margin-top: 70px;">
+<template name="videos">
+    <!-- <div class="animated bounceInUp " style="margin-top: 0px;">-->
+
+    <div class="fixme" style="height:260px;width:100%;z-index: 10000;background-color: #000;">
+        <iframe width="100%" height="250px" src="//www.youtube.com/embed/{{id}}?rel=0&autoplay=1"
+                frameborder="0"
+                allowfullscreen="true"></iframe>
+    </div>
+
+
     {{#each videoList}}
-        <div class=" panel panel-primary">
-            <div class="panel-heading">
-                <h6 class="panel-title">{{this.snippet.title}}</h6>
-            </div>
+        <div class="panel panel-default list">
             <div class="panel-body">
-                <img class="thumbnails" src="{{this.snippet.thumbnails.medium.url}}">
+                <div class="col-xs-5">
+                    <img class="thumbnails" src="{{this.snippet.thumbnails.medium.url}}">
+                </div>
+                <div class="col-xs-7 title">{{this.snippet.title}}<br><em>{{createdtime}}</em></div>
             </div>
         </div>
     {{/each}}
+    <!-- </div>-->
+
+</template>
+
+<template name="vimeo">
+
+    <div class="fixme" style="height:260px;width:100%;z-index: 10000;background-color: #000;">
+        {{#if id}}
+            <iframe src="https://player.vimeo.com/video/{{id}}?autoplay=1&badge=0" width="100%" height="250"
+                    frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
+
+            <!--<iframe src="https://player.vimeo.com/video/{{id}}?autoplay=1&badge=0"
+                    width="100%"
+                    height="250" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>-->
+        {{/if}}
     </div>
+
+    {{#each videoList}}
+        <div class="panel panel-default list">
+            <div class="panel-body">
+                <div class="col-xs-5">
+                    <img class="thumbnails" src="{{pic}}">
+                </div>
+                <div class="col-xs-7 title">{{this.name}}<br><em>{{createdtime}}</em></div>
+            </div>
+        </div>
+    {{/each}}
+    <!-- </div>-->
+
 </template>
 
 <template name="play">
-    <div   style="margin-top: 70px;">
-    <div class="panel panel-primary animated fadeInUp">
-        <div class="panel-heading">
-            <h6 class="panel-title">{{title}}</h6>
-        </div>
-        <div class="panel-body">
-            <iframe width="100%" height="250px" src="//www.youtube.com/embed/{{id}}?rel=0&autoplay=1" frameborder="0"
-                    allowfullscreen="true"></iframe>
+    <div style="margin-top: 10px;">
+        <div class="panel panel-primary animated fadeInUp">
+            <div class="panel-heading">
+                <h6 class="panel-title">{{title}}</h6>
+            </div>
+            <div class="panel-body">
+                <iframe width="100%" height="250px" src="//www.youtube.com/embed/{{id}}?rel=0&autoplay=1"
+                        frameborder="0"
+                        allowfullscreen="true"></iframe>
+            </div>
+
         </div>
 
+        <button class="btn btn-primary btn-block"><i class="fa fa-thumbs-up"></i>&nbsp;&nbsp;Like Video</button>
+        <button class="btn btn-success btn-block"><i class="fa fa-share-alt"></i>&nbsp;&nbsp;Share Video</button>
     </div>
-
-    <button class="btn btn-primary btn-block"><i class="fa fa-thumbs-up"></i>&nbsp;&nbsp;Like Video</button>
-    <button class="btn btn-success btn-block"><i class="fa fa-share-alt"></i>&nbsp;&nbsp;Share Video</button>
-</div>
 
 </template>
 
 <template name="keys">
-    <form class="form-horizontal animated bounceIn" style="padding-top: 70px">
-        <fieldset>
-            <legend>Group1</legend>
-            <div class="form-group">
-                <label for="inputEmail" class="col-lg-2 control-label">Key:</label>
-                <div class="col-lg-10">
-                    <input type="text" class="form-control" name="k1" id="k1" placeholder="Keyword">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="inputEmail" class="col-lg-2 control-label">Value:</label>
-                <div class="col-lg-10">
-                    <input type="number" class="form-control" id="v1" placeholder="Weightage">
-                </div>
-            </div>
 
-        </fieldset>
-        <fieldset>
-            <legend>Group2</legend>
-            <div class="form-group">
-                <label for="inputEmail" class="col-lg-2 control-label">Key:</label>
-                <div class="col-lg-10">
-                    <input type="text" class="form-control" id="k2" placeholder="Keyword">
+    <div class="keys">
+        <form class="form-horizontal animated bounceIn" style="padding-top: 10px">
+            <fieldset>
+                <legend>Keywords</legend>
+                <div class="form-group">
+                    <div class="col-xs-9">
+                        <input type="text" value="{{k1}}" class="form-control" id="k1" placeholder="Keyword">
+                    </div>
+                    <div class="col-xs-3">
+                        <input type="number" value="{{v1}}" class="form-control" id="v1" placeholder="Value">
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="inputEmail" class="col-lg-2 control-label">Value:</label>
-                <div class="col-lg-10">
-                    <input type="number" class="form-control" id="v2" placeholder="Weightage">
+                <div class="form-group">
+                    <div class="col-xs-9">
+                        <input type="text" value="{{k2}}" class="form-control" id="k2" placeholder="Keyword">
+                    </div>
+                    <div class="col-xs-3">
+                        <input type="number" value="{{v2}}" class="form-control" id="v2" placeholder="Value">
+                    </div>
                 </div>
-            </div>
-
-        </fieldset>
-        <fieldset>
-            <legend>Group3</legend>
-            <div class="form-group">
-                <label for="inputEmail" class="col-lg-2 control-label">Key:</label>
-                <div class="col-lg-10">
-                    <input type="text" class="form-control" id="k3" placeholder="Keyword">
+                <div class="form-group">
+                    <div class="col-xs-9">
+                        <input type="text" value="{{k3}}" class="form-control" id="k3" placeholder="Keyword">
+                    </div>
+                    <div class="col-xs-3">
+                        <input type="number" value="{{v3}}" class="form-control" id="v3" placeholder="Value">
+                    </div>
                 </div>
-            </div>
-            <div class="form-group">
-                <label for="inputEmail" class="col-lg-2 control-label">Value:</label>
-                <div class="col-lg-10">
-                    <input type="number" class="form-control" id="v3" placeholder="Weightage">
+                <div class="form-group">
+                    <div class="col-xs-9">
+                        <input type="text" value="{{k4}}" class="form-control" id="k4" placeholder="Keyword">
+                    </div>
+                    <div class="col-xs-3">
+                        <input type="number" value="{{v4}}" class="form-control" id="v4" placeholder="Value">
+                    </div>
                 </div>
-            </div>
 
-        </fieldset>
-        <fieldset>
-            <legend>Group4</legend>
-            <div class="form-group">
-                <label for="inputEmail" class="col-lg-2 control-label">Key:</label>
-                <div class="col-lg-10">
-                    <input type="text" class="form-control" id="k4" placeholder="Keyword">
-                </div>
-            </div>
-            <div class="form-group">
-                <label for="inputEmail" class="col-lg-2 control-label">Value:</label>
-                <div class="col-lg-10">
-                    <input type="number" class="form-control" id="v4" placeholder="Weightage">
-                </div>
-            </div>
+            </fieldset>
 
-        </fieldset>
-
-        <br>
-        <button id="submit" type="button" class="btn btn-block btn-info">Get Videos</button>
-        <br>
-        <br>
-    </form>
-
-    <!--<div class="form-group animated flipInX" style="margin-top: 70px;">
-        <label for="textArea" class="col-lg-2 control-label">Keywords JSON</label>
-        <div class="col-lg-10">
-            <textarea class="form-control" rows="3" id="textArea">{[key:"game of thrones",value:94],[key:"game of thrones trailer",value:65],[key:"game of thrones review",value:34]}</textarea>
-
-        </div>
-        <br>
-        <button id="submit" type="button" class="btn btn-block btn-info">Get Videos</button>
-    </div>-->
+            <br>
+            <button id="submit" type="button" class="btn btn-block btn-info"><i class="fa fa-arrow-right"></i>&nbsp;&nbsp;Get
+                Videos
+            </button>
+            <br>
+            <br>
+        </form>
+    </div>
 </template>
 
+<template name="test">
 
+    <!-- <video id="vid2" src="" class="video-js vjs-default-skin" controls preload="auto" width="90%" height="260" data-setup='{ "techOrder": ["vimeo"], "src": "https://vimeo.com/70705404" }'>
+         <p>Video Playback Not Supported</p>
+     </video>-->
+
+    <!-- <iframe src="https://player.vimeo.com/video/122574484?autoplay=1&badge=0" width="100%" height="250" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>-->
+
+</template>
+
+<template name="settings">
+    <h1>
+        <center>Coming Soon</center>
+    </h1>
+</template>
 
 
 

@@ -1,12 +1,83 @@
-Meteor.startup(function () {
+
+Meteor.startup(function(){
+	Session.set("channel","Movies");
+});
+
+
+if ( Meteor.isClient ) {
+	window.fbAsyncInit = function () {
+		FB.init({
+			appId: '1576864782598720',
+			status: true,
+			xfbml: true,
+			version: 'v2.2'
+		});
+	};
+}
+
+/*Template.navbar.onRendered(function(){
+	Template.navbar.events({
+		'click a#movies': function () {
+			console.log("movies");
+		}
+	});
+	});*/
+
+
+Template.videos.onRendered(function () {
+
+	var fixmeTop = $('.fixme').offset().top;
+	$(window).scroll(function () {
+
+		var currentScroll = $(window).scrollTop();
+		if ( currentScroll >= fixmeTop ) {
+
+			$('.fixme').css({
+				position: 'fixed',
+				top: '0',
+				left: '0',
+				width: '100%'
+			});
+		} else {
+
+			$('.fixme').css({
+				position: 'static'
+			});
+		}
+	});
 
 });
 
-Template.layout.rendered = function () {
+Template.vimeo.onRendered(function () {
+
+	var fixmeTop = $('.fixme').offset().top;
+	$(window).scroll(function () {
+
+		var currentScroll = $(window).scrollTop();
+		if ( currentScroll >= fixmeTop ) {
+
+			$('.fixme').css({
+				position: 'fixed',
+				top: '0',
+				left: '0',
+				width: '100%'
+			});
+		} else {
+
+			$('.fixme').css({
+				position: 'static'
+			});
+		}
+	});
+
+});
+
+Template.navbar.rendered = function () {
 	$(document).ready(function () {
 		$('.menu-navbar').sidr({
 			name: 'respNav',
-			source: '.nav-collapse'
+			source: '.nav-collapse',
+			renaming: false
 		});
 	});
 
@@ -14,48 +85,135 @@ Template.layout.rendered = function () {
 	$(document).bind("click", function () {
 		$.sidr('close', 'respNav');
 	});
-}
 
-Template.layout.events({
-	'click #logout': function (e) {
-		console.log("logout");
+	/*$(selector).sidr( {renaming: false} );*/
+	/*$(".fa-youtube").sidr( {renaming: false} );*/
+	$('.sidr-inner #movies').on('click',function(e){
 		e.preventDefault();
-		Meteor.logout(function () {
-			//Router.go('launch');
-		});
-	}
-});
+		Session.set("channel","Movies");
+	});
+	$('.sidr-inner #tv').on('click',function(e){
+		e.preventDefault();
+		Session.set("channel","TV Shows");
+	});
+	$('.sidr-inner #music').on('click',function(e){
+		e.preventDefault();
+		Session.set("channel","Music");
+	});
+	$('.sidr-inner #sports').on('click',function(e){
+		e.preventDefault();
+		Session.set("channel","Sports");
+	});
+	$('.sidr-inner #news').on('click',function(e){
+		e.preventDefault();
+		Session.set("channel","News");
+	});
+	$('.sidr-inner #books').on('click',function(e){
+		e.preventDefault();
+		Session.set("channel","Books");
+	});
+};
 
+Accounts.onLogin(function () {
+
+	Meteor.call('userToken', Meteor.userId(), function (error, result) {
+
+		FB.api('/me/likes?fields=category,name,likes&limit=100&access_token=' + result, 'get', function (response) {
+
+			console.log(response);
+			Meteor.call('category',response);
+
+		});
+	});
+});
 
 Template.launch.events({
 	'click #fb': function (e) {
 		e.preventDefault();
-		//Router.go('keys');
-		//console.log("I am working");
+
 		Meteor.loginWithFacebook({
-			requestPermissions: ['email'],
+			requestPermissions: ['email', 'user_likes'],
 			loginStyle: "redirect"
 		}, function () {
+
 			Router.go('keys');
 		});
 	},
 
 	'click #tw': function (e) {
 		e.preventDefault();
-		//Router.go('keys');
-		//console.log("I am working");
+
 		Meteor.loginWithTwitter({
-			//requestPermissions: ['email'],
 			loginStyle: "redirect"
 		}, function () {
+
 			Router.go('keys');
 		});
 	}
 });
 
+Template.layout.helpers({
+	'k1': function () {
+		var temp = Session.get('k1');
+		return (temp);
+	},
+	'k2': function () {
+		var temp = Session.get('k2');
+		return (temp);
+	},
+	'k3': function () {
+		var temp = Session.get('k3');
+		return (temp);
+	},
+	'k4': function () {
+		var temp = Session.get('k4');
+		return (temp);
+	},
+	'v1': function () {
+		var temp = Session.get('v1');
+		return (temp);
+	},
+	'v2': function () {
+		var temp = Session.get('v2');
+		return (temp);
+	},
+	'v3': function () {
+		var temp = Session.get('v3');
+		return (temp);
+	},
+	'v4': function () {
+		var temp = Session.get('v4');
+		return (temp);
+	}
+});
+
 Template.videos.helpers({
+	id: function () {
+		/*if(Session.get('videoId')!==null)*/
+		return Session.get('videoId');
+
+	},
 	videoList: function () {
-		return video.get();
+
+		return video.get().map(function (video, index) {
+			video.createdtime = time_ago(video.snippet.publishedAt);
+			return video;
+		});
+	}
+});
+
+Template.vimeo.helpers({
+	id: function () {
+		if ( Session.get('videoId') !== null )
+			return Session.get('videoId');
+		else return false;
+	},
+	videoList: function () {
+		return video.get().map(function (video, index) {
+			video.createdtime = time_ago(video.created_time);
+			video.pic = video.pictures.sizes[2].link;
+			return video;
+		});
 	}
 });
 
@@ -64,480 +222,146 @@ Template.videos.events({
 		e.preventDefault();
 		var self = this;
 		Session.set('videoId', self.id.videoId);
-		Session.set('title', self.snippet.title);
-		Router.go('play')
+		/*Session.set('title', self.snippet.title);
+		 Router.go('play')*/
 	}
 });
 
-Template.play.helpers({
-	id: function () {
-		return Session.get('videoId');
+Template.keys.helpers({
+	'k1': function () {
+		var temp = Session.get('k1');
+		return (temp);
 	},
-	title: function () {
-		return Session.get('title');
+	'k2': function () {
+		var temp = Session.get('k2');
+		return (temp);
+	},
+	'k3': function () {
+		var temp = Session.get('k3');
+		return (temp);
+	},
+	'k4': function () {
+		var temp = Session.get('k4');
+		return (temp);
+	},
+	'v1': function () {
+		var temp = Session.get('v1');
+		return (temp);
+	},
+	'v2': function () {
+		var temp = Session.get('v2');
+		return (temp);
+	},
+	'v3': function () {
+		var temp = Session.get('v3');
+		return (temp);
+	},
+	'v4': function () {
+		var temp = Session.get('v4');
+		return (temp);
 	}
 });
 
+Template.vimeo.events({
+	'click .panel': function (e) {
+		e.preventDefault();
+		var self = this;
+		var temp = self.uri.split('/');
+		Session.set('videoId', temp[2]);
+	}
+});
 
 Template.keys.events({
 	'click #submit': function (e, t) {
-		key1 = [$('#k1').val(), $('#v1').val()];
-		key2= [$('#k2').val(), $('#v2').val()];
-		key3= [$('#k3').val(), $('#v3').val()];
-		key4 = [$('#k4').val(), $('#v4').val()];
+		/*key1 = [$('#k1').val(), parseInt($('#v1').val())];
+		 key2 = [$('#k2').val(), parseInt($('#v2').val())];
+		 key3 = [$('#k3').val(), parseInt($('#v3').val())];
+		 key4 = [$('#k4').val(), parseInt($('#v4').val())];*/
+
+		Session.set('k1', $('#k1').val());
+		Session.set('k2', $('#k2').val());
+		Session.set('k3', $('#k3').val());
+		Session.set('k4', $('#k4').val());
+
+		Session.set('v1', parseInt($('#v1').val()));
+		Session.set('v2', parseInt($('#v2').val()));
+		Session.set('v3', parseInt($('#v3').val()));
+		Session.set('v4', parseInt($('#v4').val()));
 
 		Router.go('videos');
 	}
 });
 
-
-/*selected = [];
-
-
- if ( Meteor.isClient ) {
- //jQuery.noConflict();
-
- var SpringTransition = famous.transitions.SpringTransition;
- var SnapTransition = famous.transitions.SnapTransition;
- var WallTransition = famous.transitions.WallTransition;
-
- var Transitionable = famous.transitions.Transitionable;
-
- Transitionable.registerMethod('spring', SpringTransition);
- Transitionable.registerMethod('snap', SnapTransition);
- Transitionable.registerMethod('wall', WallTransition);
-
- MySuperTransitionIn = function (duration, curve) {
- return function (stateModifier, done) {
- stateModifier.halt();
- stateModifier.setTransform(Transform.translate(3, 3),
- {method: "spring", period: 200, dampingRatio: 0.9, velocity: 0.1}, done);
-
- };
- };
-
- MySuperTransitionOut = function (duration, curve) {
- return function (stateModifier, done) {
- stateModifier.setOpacity(1);
- stateModifier.setOpacity(0, {duration: 300, curve: 'easeInOut'}, done);
- }
- };
-
- FView.registerTransition('in:super.slow', MySuperTransitionIn(5000, 'easeOut'));
- FView.registerTransition('out:super.slow', MySuperTransitionOut(5000, 'easeOut'));
-
- var queue = new ReactiveVar();
- var q = [];
-
- var layoutOptions = {
- ListLayout: ['itemSize', 'margins', 'spacing'],
- CollectionLayout: ['itemSize', 'justify', 'margins', 'spacing']
- };
-
- Session.setDefault('margins', [3, 3, 3, 3]);
- Session.set('itemSize', 190);
- Session.set('spacing', 3);
-
-
- *//* Meteor.startup(function () {*//*
- Session.set('level', 1);
-
- Meteor.call('categoryData', null, 1, null, function (error, result) {
- // var _ref = Category.find({level: 1, parent: null}).fetch();
- var _ref = result;
-
- for ( var i = 0; i < _ref.length; i++ ) {
- Category._collection.insert({
- _id: _ref[i]._id,
- name: _ref[i].name,
- level: _ref[i].level,
- class: _ref[i].class,
- order: i,
- style: "background: hsl(" + (i * 360 / 60) + ", 100%, 50%)",
- parent: _ref[i].parent
- });
- }
- count[1] = 30;
-
- *//*if ( Category.find({level:1,name:"Load more",parent:null}).count() === 0 ) {
- Category._collection.insert({
- //_id: 1,
- level: 1,
- name: "Load more",
- parent: null,
- order: count[1],
- style: "background:#fff"
- });
- }
- *//*
- q[0] = Category.find({level: 1}, {sort: {order: 0}});
-
- queue.set(q);
- });
- //  });
-
- Template.body.rendered = function () {
-
- };
-
- getScrollingData = function () {
- Meteor.call('categoryData', null, 1, count[1], function (error, result) {
-
-
- if ( result.length != 0 ) {
- console.log(count[1]);
- console.log(result);
-
- var _ref = result;
- var i = count[1];
- for ( var j = 0; j < _ref.length; i++, j++ ) {
- Category._collection.insert({
- _id: _ref[j]._id,
- name: _ref[j].name,
- level: _ref[j].level,
- class: _ref[j].class,
- order: i,
- style: "background: hsl(" + (i * 360 / 60) + ", 100%, 50%)",
- parent: _ref[j].parent
- });
-
- }
-
- count[1] = count[1] + 30;
-
- // Category._collection.update({_id: level}, {$set: {order: count[level]}});
-
- q[0] = Category.find({level: 1, parent: null}, {sort: {order: 0}});
- queue.set(q);
- Session.set('isLoading', false);
- }
- else {
- Session.set('isLoading', true);
- }
- });
-
- };
-
- Template.listItems.events({
- 'dblclick div': function (e, t) {
-
- selected.push(self.name);
- Router.go('/videos');
- *//*Popups.show({
- template: "popup",
- modal_class: "modal-lg"
- });*//*
- },
- 'contextmenu div.item': function (e) {
- e.preventDefault();
-
- selected.push(self.name);
- Router.go('/videos');
- },
-
- 'click div': function (e, t) {
-
- if ( this.name === "Load more" ) {
- //Load More Data
- var self = this;
- Meteor.call('categoryData', this.parent, this.level, count[this.level], function (error, result) {
-
- Category._collection.remove({level: self.level, name: "Load more", parent: self.parent});
-
- var _ref = result;
- var i = count[self.level] + 1;
- for ( var j = 0; j < _ref.length; i++, j++ ) {
- Category._collection.insert({
- _id: _ref[j]._id,
- name: _ref[j].name,
- level: _ref[j].level,
- class: _ref[j].class,
- order: i,
- style: "background: hsl(" + (i * 360 / 60) + ", 100%, 50%)",
- parent: _ref[j].parent
- });
-
- }
-
- *//*Category._collection.insert({
- //_id: self.level,
- level: self.level,
- name: "Load more",
- parent: self.parent,
- order: count[self.level]+1,
- style: "background:#fff"
- });*//*
-
- count[self.level] = count[self.level] + 30;
-
- // Category._collection.update({_id: level}, {$set: {order: count[level]}});
-
- q[(self.level - 1)] = Category.find({level: self.level, parent: self.parent}, {sort: {order: 0}});
- queue.set(q);
-
- });
-
- }
-
- else {
-
- //Get other categories
- var level = this.level;
- var self = this;
-
- Category._collection.update({parent: self.parent, level: level}, {$set: {class: " "}}, {multi: true});
- Category._collection.update({_id: self._id}, {$set: {class: "selected"}});
-
- if ( Session.get('level') != level ) {
- for ( var i = Session.get('level'); i > level; i-- ) {
- q.pop();
- selected.pop();
- }
- }
- queue.set(q);
- selected.push(self.name);
-
- if ( Category.find({level: (level + 1), parent: self._id}).count() === 0 ) {
- Meteor.subscribe('category-data', self._id, (level + 1), function () {
-
- var _ref = Category.find({level: (level + 1), parent: self._id}).fetch();
-
- for ( var j = 0; j < _ref.length; j++ ) {
- Category._collection.update({_id: _ref[j]._id}, {
- $set: {
- order: j,
- style: "background: hsl(" + (j * 360 / 60) + ", 100%, 50%)"
- }
- });
-
- }
-
-
- *//*	if ( Category.find({name:"Load more",level: (level+1),parent:self._id}).count() === 0 ) {
- Category._collection.insert({
-
- level:(level+1),
- name: "Load more",
- parent: self._id,
- order: 31,
- style: "background:#fff"
- });
-
- count[(level+1)]=30;
- }*//*
-
- q.push(Category.find({parent: self._id, level: (level + 1)}, {sort: {order: 0}}));
- queue.set(q);
- });
- }
- else {
-
- q.push(Category.find({parent: self._id, level: (level + 1)}, {sort: {order: 0}}));
- queue.set(q);
-
- }
-
-
- Session.set('level', (level + 1));
- }
- }
- });
-
- Template.home.helpers({
-
- gridItem: function () {
-
- return queue.get();
- },
- layoutOptions: function () {
- var out = {};
- _.each(layoutOptions['ListLayout'], function (option) {
- out[option] = Session.get(option);
- });
- return out;
- }
- });
-
- Session.setDefault('order', 1);
-
- Template.header.helpers({
- level: function () {
- return Session.get('level');
- }
- });
-
- Template.header.events({
- 'click #google': function (e) {
- e.preventDefault();
- //console.log("I am working");
- Meteor.loginWithFacebook({
- requestPermissions: ['email'],
- loginStyle: "redirect"
- }, function () {
- *//*Router.go('mod');*//*
- });
- },
- 'click #logout': function (e) {
- e.preventDefault();
- Meteor.logout();
- },
- 'click #create': function (e) {
- e.preventDefault();
- Router.go('mod');
- }
- });
-
- Template.videos.helpers({
- videoList: function () {
- return video.get();
- },
-
- layoutOptions: function () {
- return {itemSize: [300, 230], justify: [0, 0], margins: [10, 10, 10, 10], spacing: [10, 10]};
- }
- });
-
- Template.play.helpers({
- id: function () {
- return Session.get('videoId');
- }
- });
-
- Template.playList.events({
- 'click a': function () {
- var self = this;
-
- Session.set('videoId', self.id.videoId);
- Router.go('play');
- }
- });
-
- Logger.setLevel("famous-views", "info");
-
- Template.mod.helpers({
- gridItem: function () {
-
- return queue.get();
- },
- layoutOptions: function () {
- var out = {};
- _.each(layoutOptions['ListLayout'], function (option) {
- out[option] = Session.get(option);
- });
- return out;
- }
- });
-
- Template.editItems.events({
- 'click div': function (e, t) {
-
- if ( this.name === "Load more" ) {
- //Load More Data
- var self = this;
- Meteor.call('categoryData', this.parent, this.level, count[this.level], function (error, result) {
-
- Category._collection.remove({level: self.level, name: "Load more", parent: self.parent});
-
- var _ref = result;
- var i = count[self.level] + 1;
- for ( var j = 0; j < _ref.length; i++, j++ ) {
- Category._collection.insert({
- _id: _ref[j]._id,
- name: _ref[j].name,
- level: _ref[j].level,
- class: _ref[j].class,
- order: i,
- style: "background: hsl(" + (i * 360 / 60) + ", 100%, 50%)",
- parent: _ref[j].parent
- });
-
- }
-
- *//*Category._collection.insert({
- //_id: self.level,
- level: self.level,
- name: "Load more",
- parent: self.parent,
- order: count[self.level]+1,
- style: "background:#fff"
- });*//*
-
- count[self.level] = count[self.level] + 30;
-
- // Category._collection.update({_id: level}, {$set: {order: count[level]}});
-
- q[(self.level - 1)] = Category.find({level: self.level, parent: self.parent}, {sort: {order: 0}});
- queue.set(q);
-
- });
-
- }
-
- else {
-
- //Get other categories
- var level = this.level;
- var self = this;
-
- Category._collection.update({parent: self.parent, level: level}, {$set: {class: " "}}, {multi: true});
- Category._collection.update({_id: self._id}, {$set: {class: "selected"}});
-
- if ( Session.get('level') != level ) {
- for ( var i = Session.get('level'); i > level; i-- ) {
- q.pop();
- selected.pop();
- }
- }
- queue.set(q);
- selected.push(self.name);
-
- if ( Category.find({level: (level + 1), parent: self._id}).count() === 0 ) {
- Meteor.subscribe('category-data', self._id, (level + 1), function () {
-
- var _ref = Category.find({level: (level + 1), parent: self._id}).fetch();
-
- for ( var j = 0; j < _ref.length; j++ ) {
- Category._collection.update({_id: _ref[j]._id}, {
- $set: {
- order: j,
- style: "background: hsl(" + (j * 360 / 60) + ", 100%, 50%)"
- }
- });
-
- }
-
-
- *//*	if ( Category.find({name:"Load more",level: (level+1),parent:self._id}).count() === 0 ) {
- Category._collection.insert({
-
- level:(level+1),
- name: "Load more",
- parent: self._id,
- order: 31,
- style: "background:#fff"
- });
-
- count[(level+1)]=30;
- }*//*
-
- q.push(Category.find({parent: self._id, level: (level + 1)}, {sort: {order: 0}}));
- queue.set(q);
- });
- }
- else {
-
- q.push(Category.find({parent: self._id, level: (level + 1)}, {sort: {order: 0}}));
- queue.set(q);
-
- }
-
-
- Session.set('level', (level + 1));
- }
- }
- });
-
- }*/
-
-
-
+function time_ago(time) {
+
+	switch ( typeof time ) {
+		case 'number':
+			break;
+		case 'string':
+			time = +new Date(time);
+			break;
+		case 'object':
+			if ( time.constructor === Date ) time = time.getTime();
+			break;
+		default:
+			time = +new Date();
+	}
+	var time_formats = [
+		[60, 'seconds', 1], // 60
+		[120, '1 minute ago', '1 minute from now'], // 60*2
+		[3600, 'minutes', 60], // 60*60, 60
+		[7200, '1 hour ago', '1 hour from now'], // 60*60*2
+		[86400, 'hours', 3600], // 60*60*24, 60*60
+		[172800, 'Yesterday', 'Tomorrow'], // 60*60*24*2
+		[604800, 'days', 86400], // 60*60*24*7, 60*60*24
+		[1209600, 'Last week', 'Next week'], // 60*60*24*7*4*2
+		[2419200, 'weeks', 604800], // 60*60*24*7*4, 60*60*24*7
+		[4838400, 'Last month', 'Next month'], // 60*60*24*7*4*2
+		[29030400, 'months', 2419200], // 60*60*24*7*4*12, 60*60*24*7*4
+		[58060800, 'Last year', 'Next year'], // 60*60*24*7*4*12*2
+		[2903040000, 'years', 29030400], // 60*60*24*7*4*12*100, 60*60*24*7*4*12
+		[5806080000, 'Last century', 'Next century'], // 60*60*24*7*4*12*100*2
+		[58060800000, 'centuries', 2903040000] // 60*60*24*7*4*12*100*20, 60*60*24*7*4*12*100
+	];
+	var seconds = (+new Date() - time) / 1000,
+	    token = 'ago', list_choice = 1;
+
+	if ( seconds == 0 ) {
+		return 'Just now'
+	}
+	if ( seconds < 0 ) {
+		seconds = Math.abs(seconds);
+		token = 'from now';
+		list_choice = 2;
+	}
+	var i = 0, format;
+	while ( format = time_formats[i++] )
+		if ( seconds < format[0] ) {
+			if ( typeof format[2] == 'string' )
+				return format[list_choice];
+			else
+				return Math.floor(seconds / format[2]) + ' ' + format[1] + ' ' + token;
+		}
+	return time;
+}
+
+/*Template.test.onRendered(function(){
+	videojs('vid2', { "techOrder": ["vimeo"], "src": "https://vimeo.com/70705404" }).ready(function() {
+		// You can use the video.js events even though we use the vimeo controls
+		// As you can see here, we change the background to red when the video is paused and set it back when unpaused
+		this.on('pause', function() {
+			document.body.style.backgroundColor = 'red';
+		});
+
+		this.on('play', function() {
+			document.body.style.backgroundColor = '';
+		});
+
+		// You can also change the video when you want
+		// Here we cue a second video once the first is done
+		this.one('ended', function() {
+			this.src('http://vimeo.com/79380715');
+			this.play();
+		});
+	});
+});*/

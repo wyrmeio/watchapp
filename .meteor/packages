@@ -16,3 +16,6 @@ reactive-var
 jquery
 accounts-twitter
 oauth1
+multiply:iron-router-progress
+msavin:jetsetter
+biasport:facebook-sdk

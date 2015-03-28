@@ -1,27 +1,79 @@
 @import url(http://fonts.googleapis.com/css?family=Arvo:400,700);
 
-*{
+* {
     font-family: Arvo;
-    font-size: 22px;
+    /*font-size: 22px;*/
 }
 
-.panel{
-    cursor:pointer;
-}
-
-.thumbnails{
-    width:100%;
-    height:200px;
-}
-
-button{
-    font-size: 22px !important;
-}
-
-.panel h6{
+html {
     font-size: 16px;
 }
 
-.brand{
-    text-align:center;
+p * {
+    font-size: 20px;
 }
+
+.navbar{
+    margin-bottom: 0px;
+    min-height: 10px;
+
+}
+
+.navbar * {
+    font-size: 16px;
+}
+
+/*.navbar .container-fluid{
+    height: 20px;
+}*/
+
+.panel {
+    cursor: pointer;
+}
+
+.thumbnails {
+    width: 100%;
+    height: 65px;
+}
+
+.btn {
+    font-size: 22px;
+}
+
+.panel h6 {
+    font-size: 16px;
+}
+
+.brand {
+    text-align: center;
+}
+
+
+.list .title {
+    margin-left: -10px;
+    font-size: 10px;
+}
+
+.list .panel-body{
+    padding: 0px;
+}
+
+.list{
+    margin:10px;
+}
+
+#iron-router-progress {
+    background-color : #e51c23;
+    box-shadow       : 0 0 5px #ff5177;
+}
+
+.keys{
+    margin: 10px;
+
+}
+
+#iron-router-progress.spinner:before {
+    border-color : #e51c23;
+}
+
+

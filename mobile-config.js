@@ -22,5 +22,6 @@ App.setPreference('StatusBarBackgroundColor', '#000000');*/
 
 /*App.setPreference('android-minSdkVersion', '19');
 App.setPreference('android-targetSdkVersion', '19');*/
+App.setPreference('Fullscreen', 'true');
 App.accessRule('*');
 
