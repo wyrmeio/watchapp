@@ -7,46 +7,73 @@
 
     <!-- sidr js -->
     <script src="http://www.berriart.com/sidr/javascripts/sidr/jquery.sidr.min.js"></script>
+
 </head>
 
 
+
 <template name="layout">
-{{#if currentUser}}
-      {{> navbar}}
-{{/if}}
+
+    {{#if currentUser}}
+        {{> navbar}}
+    {{/if}}
+
     {{> yield}}
+
 </template>
 
 <template name="navbar">
-    <nav class="navbar navbar-default">
+    <nav class="navbar navbar-default navbar-fixed-top">
         <div class="container-fluid">
             <div class="navbar-header">
-                <a id="btnRespNav" class="navbar-brand menu-navbar" href="#"><i class="fa fa-bars"></i>&nbsp;&nbsp;<strong>WatchApp.</strong></a>
+                <a id="btnRespNav" class="navbar-brand menu-navbar" href="#"><i
+                        class="fa fa-bars"></i>&nbsp;&nbsp;<strong>{{channel}}.</strong></a>
+
             </div>
+
+            <!--<ul class="nav navbar-right" style="height:40px">
+
+
+            </ul>-->
+
             <div class="nav-collapse collapse">
                 <ul class="nav">
                     <li><a href="#">Video Sources</a>
                         <ul>
-                            <li><a href="/videos"><i class="fa fa-youtube"></i>&nbsp;&nbsp;Youtube</a></li>
-                            <li><a href="/vimeo"><i class="fa fa-vimeo-square"></i>&nbsp;&nbsp;Vimeo</a></li>
+                            <!--<li><a href="/videos"><i class="fa fa-youtube"></i>&nbsp;&nbsp;Youtube</a></li>
+                            <li><a href="/vimeo"><i class="fa fa-vimeo-square"></i>&nbsp;&nbsp;Vimeo</a></li>-->
+                            <div style="display: inline-flex"><a href="/videos"><i
+                                    class="fa fa-youtube"></i></a>|<a href="/vimeo" id="vim"><i
+                                    class="fa fa-vimeo-square"></i></a></div>
+                            <div style="display: inline-flex"><a id="dm" href="/dailymotion"><i
+                                    class="fa fa-dashcube"></i></a>|<a id="fb" href="/facebook"><i
+                                    class="fa fa-facebook"></i></a></div>
                         </ul>
                     </li>
 
                     <li><a href="#">All Channels</a>
                         <ul>
-                            <li><a href="#" id="movies"><i class="fa fa-film"></i>&nbsp;&nbsp;Movies</a></li>
-                            <li><a href="#" id="tv"><i class="fa fa-caret-square-o-right"></i>&nbsp;&nbsp;TV Shows</a>
-                            </li>
-                            <li><a href="#" id="music"><i class="fa fa-music"></i>&nbsp;&nbsp;Music</a></li>
-                            <li><a href="#" id="sports"><i class="fa fa-soccer-ball-o"></i>&nbsp;&nbsp;Sports</a></li>
-                            <li><a href="#" id="news"><i class="fa fa-globe"></i>&nbsp;&nbsp;News/Media</a></li>
-                            <li><a href="#" id="books"><i class="fa fa-book"></i>&nbsp;&nbsp;Books</a></li>
+
+
+                            <div style="display: inline-flex;"><a style="width: 50%" href="#" id="movies"><i
+                                    class="fa fa-film"></i></a>|<a style="width: 50%" href="#" id="tv"><i
+                                    class="fa fa-caret-square-o-right"></i></a></div>
+
+                            <div style="display: inline-flex;"><a style="width: 50%" href="#" id="music"><i
+                                    class="fa fa-music"></i></a>|<a
+                                    style="width: 50%" href="#" id="sports"><i class="fa fa-soccer-ball-o"></i></a>
+                            </div>
+                            <div style="display: inline-flex;">
+                                <a style="width: 50%" href="#" id="news"><i class="fa fa-globe"></i></a>|
+                                <a style="width: 50%" href="#" id="books"><i class="fa fa-book"></i></a>
+                            </div>
+
                         </ul>
                     </li>
 
-                    <li><a href="/settings"><i class="fa fa-cog"></i>&nbsp;&nbsp;Settings</a></li>
-                    <li><a href="/logout"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;Logout</a></li>
-
+                    <li><a id="settings" href="/settings"><i class="fa fa-cog"></i>&nbsp;&nbsp;Settings</a></li>
+                     <li><a href="/logout"><i class="fa fa-sign-out"></i>&nbsp;&nbsp;Logout</a></li>
+                    <li><a href="/test">Test Page</a></li>
 
                 </ul>
             </div>
@@ -55,11 +82,9 @@
     </nav>
 </template>
 
-
 <template name="launch">
     <div class="col-xs-10 col-xs-offset-1 animated pulse">
         <br>
-
 
         <p style="text-align: center;font-size: 18px;padding-top: 100px;">
             <img src="/icon-96x96.png" width="150px" height="150px"><br>
@@ -76,30 +101,43 @@
 <template name="videos">
     <!-- <div class="animated bounceInUp " style="margin-top: 0px;">-->
 
-    <div class="fixme" style="height:260px;width:100%;z-index: 10000;background-color: #000;">
+    <div class="fixme"
+         style="position: fixed;top: 40px;left: 0;height:250px;width:100%;z-index: 10000;background-color: #000;">
         <iframe width="100%" height="250px" src="//www.youtube.com/embed/{{id}}?rel=0&autoplay=1"
                 frameborder="0"
                 allowfullscreen="true"></iframe>
     </div>
 
-
-    {{#each videoList}}
-        <div class="panel panel-default list">
+    <div style="margin-top:290px">
+        {{#each videoList}}
+            <!-- <div class="panel panel-default list">
             <div class="panel-body">
                 <div class="col-xs-5">
                     <img class="thumbnails" src="{{this.snippet.thumbnails.medium.url}}">
                 </div>
                 <div class="col-xs-7 title">{{this.snippet.title}}<br><em>{{createdtime}}</em></div>
             </div>
-        </div>
-    {{/each}}
-    <!-- </div>-->
+        </div>-->
+            <div class="col-xs-6 grid-cols">
+                <div class="panel panel-default grid">
+                    <div class="panel-body">
+                        <img class="thumbnails" src="{{this.snippet.thumbnails.medium.url}}"><br>
 
+                        <div class="nowrap">&nbsp;&nbsp;{{this.snippet.title}}</div>
+                    </div>
+                </div>
+
+            </div>
+
+        {{/each}}
+        <!-- </div>-->
+    </div>
 </template>
 
 <template name="vimeo">
 
-    <div class="fixme" style="height:260px;width:100%;z-index: 10000;background-color: #000;">
+    <div class="fixme"
+         style="position: fixed;top: 40px;left: 0;height:250px;width:100%;z-index: 10000;background-color: #000;">
         {{#if id}}
             <iframe src="https://player.vimeo.com/video/{{id}}?autoplay=1&badge=0" width="100%" height="250"
                     frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>
@@ -110,83 +148,101 @@
         {{/if}}
     </div>
 
-    {{#each videoList}}
-        <div class="panel panel-default list">
+    <div style="margin-top:290px">
+        {{#each videoList}}
+            <!-- <div class="panel panel-default list">
             <div class="panel-body">
                 <div class="col-xs-5">
                     <img class="thumbnails" src="{{pic}}">
                 </div>
                 <div class="col-xs-7 title">{{this.name}}<br><em>{{createdtime}}</em></div>
             </div>
-        </div>
-    {{/each}}
-    <!-- </div>-->
+        </div>-->
+            <div class="col-xs-6 grid-cols">
+                <div class="panel panel-default grid">
+                    <div class="panel-body">
+                        <img class="thumbnails" src="{{pic}}"><br>
 
-</template>
+                        <div class="nowrap">&nbsp;&nbsp;{{this.name}}</div>
+                    </div>
+                </div>
 
-<template name="play">
-    <div style="margin-top: 10px;">
-        <div class="panel panel-primary animated fadeInUp">
-            <div class="panel-heading">
-                <h6 class="panel-title">{{title}}</h6>
             </div>
-            <div class="panel-body">
-                <iframe width="100%" height="250px" src="//www.youtube.com/embed/{{id}}?rel=0&autoplay=1"
-                        frameborder="0"
-                        allowfullscreen="true"></iframe>
-            </div>
-
-        </div>
-
-        <button class="btn btn-primary btn-block"><i class="fa fa-thumbs-up"></i>&nbsp;&nbsp;Like Video</button>
-        <button class="btn btn-success btn-block"><i class="fa fa-share-alt"></i>&nbsp;&nbsp;Share Video</button>
+        {{/each}}
+        <!-- </div>-->
     </div>
 
 </template>
 
-<template name="keys">
+<template name="settings">
+    <div style="margin-top: 60px;padding: 15px">
 
-    <div class="keys">
-        <form class="form-horizontal animated bounceIn" style="padding-top: 10px">
+        <form class="form-horizontal animated slideInUp">
             <fieldset>
-                <legend>Keywords</legend>
+                <legend>Settings</legend>
                 <div class="form-group">
-                    <div class="col-xs-9">
-                        <input type="text" value="{{k1}}" class="form-control" id="k1" placeholder="Keyword">
+                    <div class="col-xs-5">
+                        <label>Sort by</label>
                     </div>
-                    <div class="col-xs-3">
-                        <input type="number" value="{{v1}}" class="form-control" id="v1" placeholder="Value">
+                    <div class="col-xs-7">
+                        <select class="form-control" id="order">
+                            <option value="date">Date</option>
+                            <option value="rating">Rating</option>
+                            <option value="relevance">Relevance</option>
+                            <option value="title">Title</option>
+                            <option value="videoCount">Video Count</option>
+                            <option value="viewCount">View Count</option>
+                        </select>
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <div class="col-xs-9">
-                        <input type="text" value="{{k2}}" class="form-control" id="k2" placeholder="Keyword">
+                    <div class="col-xs-5">
+                        <label>Video Definition</label>
                     </div>
-                    <div class="col-xs-3">
-                        <input type="number" value="{{v2}}" class="form-control" id="v2" placeholder="Value">
+                    <div class="col-xs-7">
+                        <select class="form-control" id="vidDef">
+                            <option value="any">Any</option>
+                            <option value="high">High</option>
+                            <option value="standard">Standard</option>
+
+                        </select>
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <div class="col-xs-9">
-                        <input type="text" value="{{k3}}" class="form-control" id="k3" placeholder="Keyword">
+                    <div class="col-xs-5">
+                        <label>Video Duration</label>
                     </div>
-                    <div class="col-xs-3">
-                        <input type="number" value="{{v3}}" class="form-control" id="v3" placeholder="Value">
+                    <div class="col-xs-7">
+                        <select class="form-control" id="vidDur">
+                            <option value="any">Any</option>
+                            <option value="long">Long</option>
+                            <option value="medium">Medium</option>
+                            <option value="short">Short</option>
+
+                        </select>
                     </div>
                 </div>
+
                 <div class="form-group">
-                    <div class="col-xs-9">
-                        <input type="text" value="{{k4}}" class="form-control" id="k4" placeholder="Keyword">
+                    <div class="col-xs-5">
+                        <label>Safe Search</label>
                     </div>
-                    <div class="col-xs-3">
-                        <input type="number" value="{{v4}}" class="form-control" id="v4" placeholder="Value">
+                    <div class="col-xs-7">
+                        <select class="form-control" id="safeSearch">
+                            <option value="moderate">Moderate</option>
+                            <option value="none">None</option>
+                            <option value="strict">Strict</option>
+                        </select>
                     </div>
                 </div>
 
             </fieldset>
-
+            <p>Note: These settings are only applicable for youtube videos.</p>
             <br>
-            <button id="submit" type="button" class="btn btn-block btn-info"><i class="fa fa-arrow-right"></i>&nbsp;&nbsp;Get
+            <button id="applySettings" type="button" class="btn btn-block btn-info"><i class="fa fa-arrow-right"></i>&nbsp;&nbsp;Go
+                to
                 Videos
             </button>
             <br>
@@ -196,20 +252,80 @@
 </template>
 
 <template name="test">
+    <div style="margin-top: 50px;">
+        <!-- <div class="fb-video" data-allowfullscreen="true" data-href="https://www.facebook.com/video.php?v=1412638199051970" data-height="400" data-width="2000"></div>-->
+      <!--  <iframe width="100%" height="450px" src="https://www.youtube.com/embed/-rF-_4vwiMs?autoplay=1"
+                frameborder="0"
+                allowfullscreen="true"></iframe>-->
+        <iframe frameborder="0" autoplay="true" width="100%" height="470" src="//www.dailymotion.com/embed/video/x2m23yc" allowfullscreen></iframe>
+    </div>
 
-    <!-- <video id="vid2" src="" class="video-js vjs-default-skin" controls preload="auto" width="90%" height="260" data-setup='{ "techOrder": ["vimeo"], "src": "https://vimeo.com/70705404" }'>
-         <p>Video Playback Not Supported</p>
-     </video>-->
-
-    <!-- <iframe src="https://player.vimeo.com/video/122574484?autoplay=1&badge=0" width="100%" height="250" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>-->
+    <!--<iframe src="https://www.facebook.com/video.php?v=1412638199051970" width="100%" height="450" frameborder="0" webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>-->
 
 </template>
 
-<template name="settings">
-    <h1>
-        <center>Coming Soon</center>
-    </h1>
+<template name="dailymotion">
+
+    <div class="fixme"
+         style="position: fixed;top: 40px;left: 0;height:250px;width:100%;z-index: 10000;background-color: #000;">
+        {{#if id}}
+            <iframe frameborder="0"  width="100%" height="250" src="//www.dailymotion.com/embed/video/{{id}}" allowfullscreen></iframe>
+
+        {{/if}}
+    </div>
+
+    <div style="margin-top:290px">
+        {{#each videoList}}
+
+            <div class="col-xs-6 grid-cols">
+                <div class="panel panel-default grid">
+                    <div class="panel-body">
+                        <img class="thumbnails" src="{{this.thumbnail_360_url}}"><br>
+
+                        <div class="nowrap">&nbsp;&nbsp;{{this.title}}</div>
+                    </div>
+                </div>
+
+            </div>
+        {{/each}}
+        <!-- </div>-->
+    </div>
+
 </template>
+
+<template name="facebook">
+
+    <div class="fixme"
+         style="position: fixed;top: 40px;left: 0;height:250px;width:100%;z-index: 10000;background-color: #000;">
+       {{#if videoType}}
+            <div class="fb-video" data-allowfullscreen="true" data-href="{{id}}" data-height="250" data-width="2000"></div>
+        {{else}}
+            <iframe width="100%" height="250px" src="{{id}}"
+                    frameborder="0"
+                    allowfullscreen="true"></iframe>
+        {{/if}}
+    </div>
+
+    <div style="margin-top:290px">
+        {{#each videoList}}
+            <div class="col-xs-6 grid-cols">
+                <div class="panel panel-default grid">
+                    <div class="panel-body">
+                        <img class="thumbnails" src="{{this.picture}}"><br>
+
+                        <div class="nowrap">&nbsp;&nbsp;{{this.message}}</div>
+                    </div>
+                </div>
+
+            </div>
+
+        {{/each}}
+        <!-- </div>-->
+    </div>
+</template>
+
+
+
 
 
 

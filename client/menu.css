@@ -5,7 +5,7 @@
     top: 0;
     height: 100%;
     z-index: 999999;
-    width: 260px;
+    width: 140px;
     overflow-x: none;
     overflow-y: auto;
     font-family: "lucida grande", tahoma, verdana, arial, sans-serif;
@@ -173,3 +173,5 @@
 .sidr input[type=button]:hover, .sidr input[type=submit]:hover {
     background: rgba(255, 255, 255, 0.9)
 }
+
+

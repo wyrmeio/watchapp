@@ -1,13 +1,19 @@
+Meteor.startup(function () {
+	Session.set("channel", "Movies");
 
-Meteor.startup(function(){
-	Session.set("channel","Movies");
+	Session.set("order", "relevance");
+	Session.set("vidDef", "any");
+	Session.set("vidDur", "any");
+	Session.set("safeSearch", "none");
+
+	Session.set("location", "none");
 });
 
 
 if ( Meteor.isClient ) {
 	window.fbAsyncInit = function () {
 		FB.init({
-			appId: '1576864782598720',
+			appId: '1576864782598720',//appId: '1576877225930809',
 			status: true,
 			xfbml: true,
 			version: 'v2.2'
@@ -15,61 +21,34 @@ if ( Meteor.isClient ) {
 	};
 }
 
-/*Template.navbar.onRendered(function(){
-	Template.navbar.events({
-		'click a#movies': function () {
-			console.log("movies");
-		}
+
+Template.settings.onRendered(function () {
+	$("select#order").on("change", function () {
+		Session.set('order', $("#order").val());
 	});
-	});*/
-
-
-Template.videos.onRendered(function () {
-
-	var fixmeTop = $('.fixme').offset().top;
-	$(window).scroll(function () {
-
-		var currentScroll = $(window).scrollTop();
-		if ( currentScroll >= fixmeTop ) {
-
-			$('.fixme').css({
-				position: 'fixed',
-				top: '0',
-				left: '0',
-				width: '100%'
-			});
-		} else {
-
-			$('.fixme').css({
-				position: 'static'
-			});
-		}
+	$("select#vidDef").on("change", function () {
+		Session.set('vidDef', $("#vidDef").val());
 	});
-
+	$("select#vidDur").on("change", function () {
+		Session.set('vidDur', $("#vidDur").val());
+	});
+	$("select#safeSearch").on("change", function () {
+		Session.set('safeSearch', $("#safeSearch").val());
+	});
 });
 
-Template.vimeo.onRendered(function () {
-
-	var fixmeTop = $('.fixme').offset().top;
-	$(window).scroll(function () {
-
-		var currentScroll = $(window).scrollTop();
-		if ( currentScroll >= fixmeTop ) {
-
-			$('.fixme').css({
-				position: 'fixed',
-				top: '0',
-				left: '0',
-				width: '100%'
-			});
-		} else {
-
-			$('.fixme').css({
-				position: 'static'
-			});
+Template.videos.onRendered(function () {
+	/*$(window).scroll(function () {
+		if ( $(window).scrollTop() + $(window).height() > $(document).height() - 100 ) {
+			console.log("reached bottom");
 		}
-	});
+	});*/
+});
 
+Template.settings.events({
+	'click #applySettings': function () {
+		Router.go('videos');
+	}
 });
 
 Template.navbar.rendered = function () {
@@ -77,7 +56,13 @@ Template.navbar.rendered = function () {
 		$('.menu-navbar').sidr({
 			name: 'respNav',
 			source: '.nav-collapse',
-			renaming: false
+			renaming: false,
+			onOpen: function () {
+				$(".navbar").animate({'left': '140px'}, "fast");
+			},
+			onClose: function () {
+				$(".navbar").animate({'left': '0px'}, "fast");
+			}
 		});
 	});
 
@@ -86,42 +71,61 @@ Template.navbar.rendered = function () {
 		$.sidr('close', 'respNav');
 	});
 
-	/*$(selector).sidr( {renaming: false} );*/
-	/*$(".fa-youtube").sidr( {renaming: false} );*/
-	$('.sidr-inner #movies').on('click',function(e){
+	$('.sidr-inner #movies').on('click', function (e) {
 		e.preventDefault();
-		Session.set("channel","Movies");
+
+		Session.set("channel", "Movies");
 	});
-	$('.sidr-inner #tv').on('click',function(e){
+	$('.sidr-inner #tv').on('click', function (e) {
 		e.preventDefault();
-		Session.set("channel","TV Shows");
+		Session.set("channel", "TV Shows");
 	});
-	$('.sidr-inner #music').on('click',function(e){
+	$('.sidr-inner #music').on('click', function (e) {
 		e.preventDefault();
-		Session.set("channel","Music");
+		Session.set("channel", "Music");
 	});
-	$('.sidr-inner #sports').on('click',function(e){
+	$('.sidr-inner #sports').on('click', function (e) {
 		e.preventDefault();
-		Session.set("channel","Sports");
+		Session.set("channel", "Sports");
 	});
-	$('.sidr-inner #news').on('click',function(e){
+	$('.sidr-inner #news').on('click', function (e) {
 		e.preventDefault();
-		Session.set("channel","News");
+		Session.set("channel", "News");
 	});
-	$('.sidr-inner #books').on('click',function(e){
+	$('.sidr-inner #books').on('click', function (e) {
 		e.preventDefault();
-		Session.set("channel","Books");
+		Session.set("channel", "Books");
 	});
+
 };
+
+Template.navbar.helpers({
+	channel: function () {
+		return Session.get("channel");
+	}
+});
 
 Accounts.onLogin(function () {
 
 	Meteor.call('userToken', Meteor.userId(), function (error, result) {
+		Session.set("token", result);
 
-		FB.api('/me/likes?fields=category,name,likes&limit=100&access_token=' + result, 'get', function (response) {
+		FB.api('/me?fields=location,likes.limit(100){category,name,likes}&access_token=' + result, 'get',function (response) {
+			Meteor.call('category', response.likes);
 
-			console.log(response);
-			Meteor.call('category',response);
+			var temp = (typeof response.location.name);
+			if ( temp != undefined ) {
+				/*HTTP.get("https://maps.googleapis.com/maps/api/geocode/json?address=" + response.location.name,function(error,res){
+
+					var loc_Json = JSON.parse(res.content);
+					var loc=loc_Json.results[0].geometry.location.lat+','+loc_Json.results[0].geometry.location.lng;
+					Session.set("location", loc);
+					console.log(loc);
+
+				});*/
+
+				Session.set("location", response.location.name);
+			}
 
 		});
 	});
@@ -132,11 +136,10 @@ Template.launch.events({
 		e.preventDefault();
 
 		Meteor.loginWithFacebook({
-			requestPermissions: ['email', 'user_likes'],
+			requestPermissions: ['email', 'user_likes', 'user_posts', 'user_videos', 'user_location'],
 			loginStyle: "redirect"
 		}, function () {
-
-			Router.go('keys');
+			Router.go('videos');
 		});
 	},
 
@@ -147,43 +150,8 @@ Template.launch.events({
 			loginStyle: "redirect"
 		}, function () {
 
-			Router.go('keys');
+			Router.go('videos');
 		});
-	}
-});
-
-Template.layout.helpers({
-	'k1': function () {
-		var temp = Session.get('k1');
-		return (temp);
-	},
-	'k2': function () {
-		var temp = Session.get('k2');
-		return (temp);
-	},
-	'k3': function () {
-		var temp = Session.get('k3');
-		return (temp);
-	},
-	'k4': function () {
-		var temp = Session.get('k4');
-		return (temp);
-	},
-	'v1': function () {
-		var temp = Session.get('v1');
-		return (temp);
-	},
-	'v2': function () {
-		var temp = Session.get('v2');
-		return (temp);
-	},
-	'v3': function () {
-		var temp = Session.get('v3');
-		return (temp);
-	},
-	'v4': function () {
-		var temp = Session.get('v4');
-		return (temp);
 	}
 });
 
@@ -209,11 +177,22 @@ Template.vimeo.helpers({
 		else return false;
 	},
 	videoList: function () {
-		return video.get().map(function (video, index) {
+		return video.get().map(function (video) {
 			video.createdtime = time_ago(video.created_time);
 			video.pic = video.pictures.sizes[2].link;
 			return video;
 		});
+	}
+});
+
+Template.dailymotion.helpers({
+	id: function () {
+		if ( Session.get('videoId') !== null )
+			return Session.get('videoId');
+		else return false;
+	},
+	videoList: function () {
+		return video.get();
 	}
 });
 
@@ -227,41 +206,6 @@ Template.videos.events({
 	}
 });
 
-Template.keys.helpers({
-	'k1': function () {
-		var temp = Session.get('k1');
-		return (temp);
-	},
-	'k2': function () {
-		var temp = Session.get('k2');
-		return (temp);
-	},
-	'k3': function () {
-		var temp = Session.get('k3');
-		return (temp);
-	},
-	'k4': function () {
-		var temp = Session.get('k4');
-		return (temp);
-	},
-	'v1': function () {
-		var temp = Session.get('v1');
-		return (temp);
-	},
-	'v2': function () {
-		var temp = Session.get('v2');
-		return (temp);
-	},
-	'v3': function () {
-		var temp = Session.get('v3');
-		return (temp);
-	},
-	'v4': function () {
-		var temp = Session.get('v4');
-		return (temp);
-	}
-});
-
 Template.vimeo.events({
 	'click .panel': function (e) {
 		e.preventDefault();
@@ -271,26 +215,45 @@ Template.vimeo.events({
 	}
 });
 
-Template.keys.events({
-	'click #submit': function (e, t) {
-		/*key1 = [$('#k1').val(), parseInt($('#v1').val())];
-		 key2 = [$('#k2').val(), parseInt($('#v2').val())];
-		 key3 = [$('#k3').val(), parseInt($('#v3').val())];
-		 key4 = [$('#k4').val(), parseInt($('#v4').val())];*/
-
-		Session.set('k1', $('#k1').val());
-		Session.set('k2', $('#k2').val());
-		Session.set('k3', $('#k3').val());
-		Session.set('k4', $('#k4').val());
-
-		Session.set('v1', parseInt($('#v1').val()));
-		Session.set('v2', parseInt($('#v2').val()));
-		Session.set('v3', parseInt($('#v3').val()));
-		Session.set('v4', parseInt($('#v4').val()));
-
-		Router.go('videos');
+Template.dailymotion.events({
+	'click .panel': function (e) {
+		e.preventDefault();
+		var self = this;
+		var temp = self.id;
+		Session.set('videoId', temp);
 	}
 });
+
+Template.facebook.helpers({
+	id: function () {
+		if ( Session.get('videoId') !== null )
+			return Session.get('videoId');
+		else return false;
+	},
+	videoType: function () {
+		return Session.get('videoType');
+	},
+	videoList: function () {
+		return video.get();
+	}
+});
+
+Template.facebook.events({
+	'click .panel': function (e) {
+		e.preventDefault();
+		var self = this;
+
+		/*	if ( self.link.indexOf("facebook") > -1 ) {
+		 Session.set("videoType", true);
+		 Session.set('videoId', self.link);
+		 }
+		 else {*/
+		Session.set("videoType", false);
+		Session.set('videoId', self.source);
+		//}
+	}
+});
+
 
 function time_ago(time) {
 
@@ -345,23 +308,24 @@ function time_ago(time) {
 	return time;
 }
 
+
 /*Template.test.onRendered(function(){
-	videojs('vid2', { "techOrder": ["vimeo"], "src": "https://vimeo.com/70705404" }).ready(function() {
-		// You can use the video.js events even though we use the vimeo controls
-		// As you can see here, we change the background to red when the video is paused and set it back when unpaused
-		this.on('pause', function() {
-			document.body.style.backgroundColor = 'red';
-		});
+ videojs('vid2', { "techOrder": ["vimeo"], "src": "https://vimeo.com/70705404" }).ready(function() {
+ // You can use the video.js events even though we use the vimeo controls
+ // As you can see here, we change the background to red when the video is paused and set it back when unpaused
+ this.on('pause', function() {
+ document.body.style.backgroundColor = 'red';
+ });
 
-		this.on('play', function() {
-			document.body.style.backgroundColor = '';
-		});
+ this.on('play', function() {
+ document.body.style.backgroundColor = '';
+ });
 
-		// You can also change the video when you want
-		// Here we cue a second video once the first is done
-		this.one('ended', function() {
-			this.src('http://vimeo.com/79380715');
-			this.play();
-		});
-	});
-});*/
+ // You can also change the video when you want
+ // Here we cue a second video once the first is done
+ this.one('ended', function() {
+ this.src('http://vimeo.com/79380715');
+ this.play();
+ });
+ });
+ });*/
